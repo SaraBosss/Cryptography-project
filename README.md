@@ -127,6 +127,4 @@ The project evolved as follows:
 - **Enhanced Proof of Work**: The mining process could be made more challenging to simulate real-world blockchain mining difficulty.
 - **GUI Implementation**: A graphical user interface could be developed to simplify interaction with the blockchain for non-technical users.
 
----
 
-This documentation now clearly explains how the project started as a basic blockchain and how the **addition of RSA encryption** gradually improved security and transaction authenticity, ultimately creating a more reliable and secure **MiniBlockchain** system.# Cryptography-project
