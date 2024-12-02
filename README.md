@@ -79,6 +79,7 @@ The system now includes:
    - Validate the blockchain
 
 
+
 ## 7. **Conclusion**
 
 The **MiniBlockchain** project began as a simple blockchain implementation and evolved into a more secure and reliable system by incorporating **RSA encryption** for transaction signing and verification. This added security feature ensures that only authorized participants can submit valid transactions, making the system more robust and trustworthy.
