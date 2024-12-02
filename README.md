@@ -72,13 +72,9 @@ The system now includes:
    ```bash
    python miniBlockChain_RSA.py
    ```
-4. Follow the on-screen prompts to:
-   - Add transactions (with RSA signing)
-   - Mine pending transactions
-   - Print the blockchain
-   - Validate the blockchain
-
-
+4. Follow the file How to Use the MiniBlockChain Program
+   `https://github.com/SaraBosss/Cryptography-project/blob/main/How%20to%20Use%20the%20MiniBlockchain%20Program.pdf`
+     
 
 ## 7. **Conclusion**
 
