@@ -6,13 +6,9 @@
 3. **Key Concepts**
 4. **Technologies Used**
 5. **How the System Works**
-6. **Code Structure**
-7. **How to Run the Project**
-8. **Transaction Verification with RSA**
-9. **Security Features**
-10. **Conclusion**
-11. **Evolution of the Project**
-12. **Future Work**
+6. **How to Run the Project**
+7. **Conclusion**
+
 
 ---
 
@@ -60,17 +56,7 @@ The system now includes:
 4. **Mining**: Pending transactions are mined by solving a proof-of-work puzzle, ensuring that blocks are securely added to the blockchain.
 5. **Block Addition**: Once a valid nonce is found through mining, the block with the verified transactions is added to the blockchain.
 
-## 6. **Code Structure**
-
-The code is organized into two main classes:
-- **Block**: Represents a block in the blockchain with attributes such as `index`, `prev_hash`, `timestamp`, `data`, `hash`, and `nonce`.
-- **Blockchain**: Manages the blockchain, adds transactions, verifies transaction signatures, and mines blocks using proof of work.
-
-The methods in the **Blockchain** class have evolved over time:
-- **Initial Methods**: Initially, methods for creating blocks, adding transactions, and printing the blockchain were implemented without any security measures.
-- **RSA Integration**: Later methods like `add_transaction` and `verify_transaction` were updated to incorporate RSA encryption. Transactions are now signed with the sender's private key and verified using the sender's public key.
-
-## 7. **How to Run the Project**
+## 6. **How to Run the Project**
 
 ### **Prerequisites**
 - Python 3.x
@@ -84,7 +70,7 @@ The methods in the **Blockchain** class have evolved over time:
    ```
 3. Run the main Python script:
    ```bash
-   python miniblockchain.py
+   python miniBlockChain_RSA.py
    ```
 4. Follow the on-screen prompts to:
    - Add transactions (with RSA signing)
@@ -92,39 +78,11 @@ The methods in the **Blockchain** class have evolved over time:
    - Print the blockchain
    - Validate the blockchain
 
-## 8. **Transaction Verification with RSA**
 
-The key improvement to the project was the addition of **RSA authentication** for verifying transactions.
-
-1. **Transaction Creation**: When a transaction is created (e.g., "Alice sends 10 coins to Bob"), the sender signs the transaction using their **private RSA key**.
-2. **Transaction Verification**: The recipient (or any node in the network) can verify the transaction by using the sender's **public RSA key**. This ensures that the transaction was signed by the correct party and hasn’t been tampered with.
-3. **Authenticating Senders and Receivers**: By using RSA, the system guarantees that the senders and receivers of transactions are authenticated, ensuring that no unauthorized user can manipulate the blockchain.
-
-## 9. **Security Features**
-
-- **RSA Digital Signatures**: Transactions are signed with the sender's private RSA key, and only the sender's public key can verify it, preventing unauthorized changes.
-- **Blockchain Integrity**: Blocks are linked together via hashes using SHA-256, ensuring data integrity and preventing tampering.
-- **Proof of Work**: Mining ensures that adding a new block requires computational effort, making it difficult to alter the blockchain.
-
-The introduction of RSA encryption significantly increased the **security** and **reliability** of the system by preventing unauthorized transactions and ensuring the authenticity of all transactions.
-
-## 10. **Conclusion**
+## 7. **Conclusion**
 
 The **MiniBlockchain** project began as a simple blockchain implementation and evolved into a more secure and reliable system by incorporating **RSA encryption** for transaction signing and verification. This added security feature ensures that only authorized participants can submit valid transactions, making the system more robust and trustworthy.
 
-By combining blockchain with RSA authentication, the project demonstrates how encryption can be used to enhance the security and integrity of distributed ledger systems.
 
-## 11. **Evolution of the Project**
-
-The project evolved as follows:
-1. **Initial Phase (Basic Blockchain)**: The project started with basic blockchain functionality, where transactions were added to blocks without any authentication or encryption.
-2. **Security Phase (Adding RSA Authentication)**: As the need for security became apparent, **RSA encryption** was integrated to allow for the signing and verification of transactions. This ensured that only authorized users could initiate transactions and that each transaction was verifiable by others.
-3. **Current State (Fully Secured Blockchain)**: The system now includes fully verified transactions, where the sender’s private key signs the transaction and the receiver’s public key (or any participant’s public key) can verify it, ensuring a high level of security.
-
-## 12. **Future Work**
-
-- **Add More Participants**: The system could be extended to support more users, not just Alice and Bob, to simulate a more realistic blockchain network.
-- **Enhanced Proof of Work**: The mining process could be made more challenging to simulate real-world blockchain mining difficulty.
-- **GUI Implementation**: A graphical user interface could be developed to simplify interaction with the blockchain for non-technical users.
 
 
