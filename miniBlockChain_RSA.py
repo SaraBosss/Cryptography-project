@@ -4,7 +4,7 @@ import rsa  # Adding the rsa library for cryptography
 
 class Block:
     """
-    Represents a block in the blockchain. A block contains information like 
+    Represents a block in the blockchain. A block contains information like
     its index, previous hash, timestamp, data, hash, and a nonce.
     """
 
@@ -74,23 +74,29 @@ class Blockchain:
         """
         Adds a pending transaction after signing it.
         """
-        # Check if the amount is a valid number
-        if not amount.isdigit():
-            print("Invalid amount. Please enter a valid number.")
-            return
+        if sender not in ["Alice", "Bob"]:
+            print("Transaction rejected: Invalid sender.")
+            return False
+        if receiver not in ["Alice", "Bob"]:
+            print("Transaction rejected: Invalid receiver.")
+            return False
+        if sender == receiver:
+            print("Transaction rejected: Sender and receiver cannot be the same.")
+            return False
+        if not isinstance(amount, float) or amount <= 0:
+            print("Transaction rejected: Invalid amount.")
+            return False
 
-        # Create and sign the transaction with the sender's private key
-        transaction = f"{sender} sends {amount} to {receiver}"
+        transaction = f"{sender} sends {amount:.2f} to {receiver}"
         signature = rsa.sign(transaction.encode(), sender_priv_key, 'SHA-256')
 
-        # Add the signed transaction to the pending transactions list
         self.pending_transactions.append((transaction, signature))
         print(f"Transaction added: {transaction} | Signature: {signature.hex()}")
 
-        # If the number of transactions exceeds the limit, the oldest one is removed
         if len(self.pending_transactions) > self.transaction_limit:
             self.pending_transactions.pop(0)
             print("Oldest transaction pruned.")
+        return True
 
     def verify_transaction(self, transaction, signature, sender_pub_key):
         """
@@ -107,25 +113,15 @@ class Blockchain:
     def mine(self, alice_pub_key, bob_pub_key):
         """
         Mines the pending transactions into a new block.
-
-        Args:
-        alice_pub_key (rsa.PublicKey): Alice's public key for verifying transactions.
-        bob_pub_key (rsa.PublicKey): Bob's public key for verifying transactions.
         """
         if not self.pending_transactions:
             print("No pending transactions to mine.")
             return
 
-        # Verify transactions before adding them to the block
         valid_transactions = []
         for transaction, signature in self.pending_transactions:
-            sender = transaction.split(' ')[0]  # Extract the sender's name
-            if sender == "Alice":
-                sender_pub_key = alice_pub_key
-            else:
-                sender_pub_key = bob_pub_key
-
-            # Verify the validity of the transaction's signature
+            sender = transaction.split(' ')[0]
+            sender_pub_key = alice_pub_key if sender == "Alice" else bob_pub_key
             if self.verify_transaction(transaction, signature, sender_pub_key):
                 valid_transactions.append(transaction)
             else:
@@ -137,13 +133,12 @@ class Blockchain:
 
         nonce = 0
         while True:
-            # Join all valid transactions into a single string
             transactions_data = " | ".join(valid_transactions)
             hash_attempt = self.calculate_hash(len(self.chain), self.get_latest_block().hash, int(time.time()), transactions_data, nonce)
             if hash_attempt.startswith('0' * self.difficulty):
                 print(f"Nonce found: {nonce}")
                 self.add_block(transactions_data, nonce)
-                self.pending_transactions = []  # Clear transactions after mining
+                self.pending_transactions = []
                 print("Pending transactions mined into a new block.")
                 break
             nonce += 1
@@ -151,9 +146,6 @@ class Blockchain:
     def is_chain_valid(self):
         """
         Verifies the integrity of the blockchain.
-
-        Returns:
-        bool: True if the chain is valid, False otherwise.
         """
         for i in range(1, len(self.chain)):
             current_block = self.chain[i]
@@ -181,48 +173,55 @@ def main():
     """
     Main function to run the blockchain application.
     """
-    # Generate public and private keys for Alice and Bob
     alice_pub_key, alice_priv_key = rsa.newkeys(512)
     bob_pub_key, bob_priv_key = rsa.newkeys(512)
 
-    print("Mini Blockchain")
+    print("Mini Blockchain\n")
+
     print("1. Add Transaction")
     print("2. Mine Pending Transactions")
     print("3. Print Blockchain")
     print("4. Validate Blockchain")
-    print("5. Exit")
+    print("5. Exit\n")
 
     blockchain = Blockchain()
-    alice_balance = 100
-    bob_balance = 50
+    alice_balance = 100.0
+    bob_balance = 50.0
+    alice_temp_balance = alice_balance
+    bob_temp_balance = bob_balance
 
     while True:
+        print(f"Alice's balance: {alice_balance:.2f}")
+        print(f"Bob's balance: {bob_balance:.2f}\n")
+        
         choice = input("Enter your choice: ")
-        print()  # Add a newline after user input
+
         if choice == '1':
             sender = input("Enter sender (Alice/Bob): ")
             receiver = input("Enter receiver (Alice/Bob): ")
-            amount = input("Enter amount: ")
+            amount = input("Enter amount: ").replace(',', '.')
 
-            # Verify that the amount is a number
             try:
-                amount = int(amount)  # Attempt to convert the amount to an integer
-                if sender == "Alice" and alice_balance >= amount:
-                    alice_balance -= amount
-                    blockchain.add_transaction(sender, receiver, str(amount), alice_priv_key)
-                elif sender == "Bob" and bob_balance >= amount:
-                    bob_balance -= amount
-                    blockchain.add_transaction(sender, receiver, str(amount), bob_priv_key)
+                amount = float(amount)
+                if sender == "Alice" and alice_temp_balance >= amount:
+                    if blockchain.add_transaction(sender, receiver, amount, alice_priv_key):
+                        alice_temp_balance -= amount
+                        bob_temp_balance += amount
+                        print(f"Alice's temp balance: {alice_temp_balance:.2f}")
+                elif sender == "Bob" and bob_temp_balance >= amount:
+                    if blockchain.add_transaction(sender, receiver, amount, bob_priv_key):
+                        bob_temp_balance -= amount
+                        alice_temp_balance += amount
+                        print(f"Bob's temp balance: {bob_temp_balance:.2f}")
                 else:
                     print("Insufficient balance or invalid sender/receiver.")
             except ValueError:
                 print("Invalid amount. Please enter a valid number.")
 
-            print(f"Alice's balance: {alice_balance}")
-            print(f"Bob's balance: {bob_balance}")
-
         elif choice == '2':
             blockchain.mine(alice_pub_key, bob_pub_key)
+            alice_balance = alice_temp_balance
+            bob_balance = bob_temp_balance
 
         elif choice == '3':
             blockchain.print_chain()
@@ -235,9 +234,8 @@ def main():
             break
 
         else:
-            print("Invalid choice. Please try again.")
-        print()  # Add a newline between loop iterations
+            print("Invalid choice. Please try again.\n")
+     
 
 if __name__ == "__main__":
     main()
-
