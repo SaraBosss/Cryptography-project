@@ -74,6 +74,7 @@ class Blockchain:
         """
         Adds a pending transaction after signing it.
         """
+        # Validate sender and receiver
         if sender not in ["Alice", "Bob"]:
             print("Transaction rejected: Invalid sender.")
             return False
@@ -87,12 +88,16 @@ class Blockchain:
             print("Transaction rejected: Invalid amount.")
             return False
 
+        # Create the transaction string
         transaction = f"{sender} sends {amount:.2f} to {receiver}"
+        # Sign the transaction with the sender's private key
         signature = rsa.sign(transaction.encode(), sender_priv_key, 'SHA-256')
 
+        # Add the transaction and its signature to the pending transactions list
         self.pending_transactions.append((transaction, signature))
         print(f"Transaction added: {transaction} | Signature: {signature.hex()}")
 
+        # Prune the oldest transaction if the limit is exceeded
         if len(self.pending_transactions) > self.transaction_limit:
             self.pending_transactions.pop(0)
             print("Oldest transaction pruned.")
@@ -173,6 +178,7 @@ def main():
     """
     Main function to run the blockchain application.
     """
+    # Generate RSA keys for Alice and Bob
     alice_pub_key, alice_priv_key = rsa.newkeys(512)
     bob_pub_key, bob_priv_key = rsa.newkeys(512)
 
@@ -193,7 +199,7 @@ def main():
     while True:
         print(f"Alice's balance: {alice_balance:.2f}")
         print(f"Bob's balance: {bob_balance:.2f}\n")
-        
+
         choice = input("Enter your choice: ")
 
         if choice == '1':
@@ -235,7 +241,6 @@ def main():
 
         else:
             print("Invalid choice. Please try again.\n")
-     
 
 if __name__ == "__main__":
     main()
